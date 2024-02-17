@@ -19,11 +19,14 @@
 }
 
 .modal-content {
+  position: relative;
   max-width: 600px; /* Adjust width as needed */
   background-color: white;
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  text-align: left;
+  font-size: small;
 }
 
 .modal-content h2 {
@@ -48,7 +51,12 @@
 
 .modal-content .close {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 20px;
+  right: 20px;
   cursor: pointer;
+  color: black;
+}
+
+.modal-header{
+  border-bottom: 2px solid black;
 }
