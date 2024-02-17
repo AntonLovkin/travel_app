@@ -15,9 +15,9 @@ const Modal = ({ onClose, onSave }) => {
     <div className="modal-overlay">
       <div className="modal">
         <div className="modal-content">
-          {/* <span className="close" onClick={onClose}>
+          <span className="close" onClick={onClose}>
             &times;
-          </span> */}
+          </span>
           <h2>Select City</h2>
           <select value={city} onChange={(e) => setCity(e.target.value)}>
             <option value="">Select a city</option>
