@@ -1,5 +1,7 @@
-const TodaysWeather = ({data}) => {
-    console.log(data)
+import Timer from './Timer';
+
+const TodaysWeather = ({data, date}) => {
+    // console.log(date)
     const { datetime, temp, icon} = data;
     return (
         <div style={{border: "2px solid white", borderRadius: "20px", padding: "10px", margin: "10px", cursor: "pointer", backgroundColor: "white"}}>
@@ -7,6 +9,7 @@ const TodaysWeather = ({data}) => {
                 <p>{datetime}</p>
                 <p>{temp} deg</p>
                 <p>{icon}</p>
+                <Timer date={date}/>
               </div>
     )
 };

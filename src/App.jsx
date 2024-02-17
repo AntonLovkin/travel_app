@@ -23,6 +23,7 @@ function App() {
     JSON.parse(localStorage.getItem('trips')) || tripsList || []
   );
   const [tripWeatherInfo, setTripWeatherInfo] = useState(null);
+  const [startDateTrip, setStartDateTrip] = useState('');
 
   useEffect(() => {
     const trips = JSON.parse(localStorage.getItem('trips'));
@@ -104,6 +105,7 @@ function App() {
   const onTripClick = (city, startDate, endDate) => {
     // console.log(city, startDate, endDate);
     searchCityInfo(city);
+    setStartDateTrip(startDate);
     fetch(
       `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${city}/${startDate}/${endDate}?unitGroup=metric&include=days&key=${API_KEY}&contentType=json`
     )
@@ -145,8 +147,8 @@ function App() {
         {tripWeatherInfo && tripWeatherInfo.map(info => <DayWeather data={info} />)}
         </ul>
       </div>
-      {cityInfo && (
-        <TodaysWeather data={cityInfo}/>
+      {cityInfo && startDateTrip && (
+        <TodaysWeather data={cityInfo} date={startDateTrip}/>
       )}
       {showModal && (
         <Modal onSave={onSaveTripData} onClose={onAddTripBtnClick} />
