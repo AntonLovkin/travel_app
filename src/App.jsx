@@ -6,15 +6,17 @@ import './App.css';
 import Modal from './components/Modal.jsx';
 import Trip from './components/Trip.jsx';
 import DayWeather from './components/DayWeather.jsx';
+import TodaysWeather from './components/TodaysWeather.jsx';
 
 const API_KEY = 'XM9YG9VGNME7QHFXDNCCMDYFU';
 const tripsList = [
-  { city: 'Kyiv', startDate: '2024-03-06', endDate: '2024-03-09' },
+  { city: 'Kyiv', startDate: '2024-03-08', endDate: '2024-03-09' },
   { city: 'Tokio', startDate: '2024-03-06', endDate: '2024-03-09' },
 ];
 
 function App() {
   const [city, setCity] = useState('');
+  const [cityInfo, setCityInfo] = useState('');
   const [info, setInfo] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [tripsFromLocalstorage, setTripsFromLocalstorage] = useState(
@@ -24,14 +26,14 @@ function App() {
 
   useEffect(() => {
     const trips = JSON.parse(localStorage.getItem('trips'));
-    console.log(trips);
+    // console.log(trips);
     if (trips) {
       setTripsFromLocalstorage(trips);
     }
   }, []);
 
   useEffect(() => {
-    console.log(tripsFromLocalstorage);
+    // console.log(tripsFromLocalstorage);
     localStorage.setItem('trips', JSON.stringify(tripsFromLocalstorage));
   }, [tripsFromLocalstorage]);
 
@@ -56,6 +58,7 @@ function App() {
       })
       .then((data) => {
         // console.log(data)
+        setCityInfo(data);
         setInfo(
           `Weather temp in ${data.resolvedAddress}: ${data.days[0].temp} градуси за Цельсієм`
         );
@@ -76,9 +79,31 @@ function App() {
     console.log(tripsFromLocalstorage);
   };
 
+  const searchCityInfo = (city) => {
+    console.log(city);
+
+    fetch(
+      `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${city}/today?unitGroup=metric&include=days&key=${API_KEY}&contentType=json`
+    )
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log(data.days[0])
+        setCityInfo(data.days[0]);
+      })
+      .catch((error) => {
+        // setInfo(`There is no such city like ${city}, try English.`);
+        console.error('There was a problem with the request:', error);
+      });
+  };
+
   const onTripClick = (city, startDate, endDate) => {
-    console.log(city, startDate, endDate);
-    console.log("click");
+    // console.log(city, startDate, endDate);
+    searchCityInfo(city);
     fetch(
       `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${city}/${startDate}/${endDate}?unitGroup=metric&include=days&key=${API_KEY}&contentType=json`
     )
@@ -89,7 +114,6 @@ function App() {
         return response.json();
       })
       .then((data) => {
-        console.log(data.days)
         setTripWeatherInfo(data.days);
       })
       .catch((error) => {
@@ -109,15 +133,6 @@ function App() {
       <div>
         <h2>List of Trips</h2>
         <ul>
-          {/* {tripsFromLocalstorage.length > 0 &&
-            tripsFromLocalstorage.map(({ city, startDate, endDate }) => (
-              <li>
-                <h3>{city}</h3>
-                <p>
-                  from {startDate} to {endDate}
-                </p>
-              </li>
-            ))} */}
             {tripsFromLocalstorage.length > 0 &&
             tripsFromLocalstorage.map(data => <Trip onClick={onTripClick} data={data}/>)}
           <li>
@@ -130,6 +145,9 @@ function App() {
         {tripWeatherInfo && tripWeatherInfo.map(info => <DayWeather data={info} />)}
         </ul>
       </div>
+      {cityInfo && (
+        <TodaysWeather data={cityInfo}/>
+      )}
       {showModal && (
         <Modal onSave={onSaveTripData} onClose={onAddTripBtnClick} />
       )}
@@ -138,28 +156,3 @@ function App() {
 }
 
 export default App;
-
-{
-  /* <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p> */
-}
-
-// const [count, setCount] = useState(0)
