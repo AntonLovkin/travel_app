@@ -1,5 +1,6 @@
-// import Modal from "";
+import Modal from "./Modal";
+import Trip from "./Trip";
 
-// export default {
-//   Modal
-// }
+export default {
+  Modal, Trip
+}

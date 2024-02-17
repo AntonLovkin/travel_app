@@ -18,6 +18,7 @@ const Modal = ({ onClose, onSave }) => {
           <span className="close" onClick={onClose}>
             &times;
           </span>
+          <h2 className='modal-header'>Create Trip</h2>
           <h2>Select City</h2>
           <select value={city} onChange={(e) => setCity(e.target.value)}>
             <option value="">Select a city</option>
