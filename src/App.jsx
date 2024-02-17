@@ -114,7 +114,6 @@ function App() {
         return response.json();
       })
       .then((data) => {
-        // console.log(data.days)
         setTripWeatherInfo(data.days);
       })
       .catch((error) => {
