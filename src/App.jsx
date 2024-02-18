@@ -9,6 +9,8 @@ import DayWeather from './components/DayWeather.jsx';
 import TodaysWeather from './components/TodaysWeather.jsx';
 
 const API_KEY = 'XM9YG9VGNME7QHFXDNCCMDYFU';
+const URL = 'https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline';
+
 const tripsList = [
   { city: 'Kyiv', startDate: '2024-03-08', endDate: '2024-03-09' },
   { city: 'Tokio', startDate: '2024-03-06', endDate: '2024-03-09' },
@@ -49,7 +51,7 @@ function App() {
     if (city.trim() === '') return;
 
     fetch(
-      `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${city}/today?unitGroup=metric&include=days&key=${API_KEY}&contentType=json`
+      `${URL}/${city}/today?unitGroup=metric&include=days&key=${API_KEY}&contentType=json`
     )
       .then((response) => {
         if (!response.ok) {
@@ -84,7 +86,7 @@ function App() {
     console.log(city);
 
     fetch(
-      `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${city}/today?unitGroup=metric&include=days&key=${API_KEY}&contentType=json`
+      `${URL}/${city}/today?unitGroup=metric&include=days&key=${API_KEY}&contentType=json`
     )
       .then((response) => {
         if (!response.ok) {
@@ -107,7 +109,7 @@ function App() {
     searchCityInfo(city);
     setStartDateTrip(startDate);
     fetch(
-      `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${city}/${startDate}/${endDate}?unitGroup=metric&include=days&key=${API_KEY}&contentType=json`
+      `${URL}/${city}/${startDate}/${endDate}?unitGroup=metric&include=days&key=${API_KEY}&contentType=json`
     )
       .then((response) => {
         if (!response.ok) {
@@ -119,8 +121,7 @@ function App() {
         setTripWeatherInfo(data.days);
       })
       .catch((error) => {
-        // setInfo(`There is no such city like ${city}, try English.`);
-        // console.error('There was a problem with the request:', error);
+        console.error('There was a problem with the request:', error);
       });
   };
 
