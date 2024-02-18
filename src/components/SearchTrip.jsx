@@ -1,11 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
+import Timer from './Timer';
+import styles from './SearchTrip.module.css';
 import { API_KEY, URL } from '../variables';
+import getDayOfWeek from '../getDayOfWeek';
 
 function SearchTrip() {
     const [city, setCity] = useState('');
     const [info, setInfo] = useState('');
     const [cityInfo, setCityInfo] = useState('');
+
+    const dayOfWeek =cityInfo && getDayOfWeek(cityInfo.days[0].datetime);
 
     const onInputText = (event) => {
         // console.log(event.target.value);
@@ -15,7 +20,10 @@ function SearchTrip() {
     const onSearchBtnClick = (event) => {
         event.preventDefault();
         // console.log(city);
-        if (city.trim() === '') return;
+        if (city.trim() === '') {
+            setInfo('');
+            return
+        };
 
         fetch(
             `${URL}/${city}/today?unitGroup=metric&include=days&key=${API_KEY}&contentType=json`
@@ -27,25 +35,29 @@ function SearchTrip() {
                 return response.json();
             })
             .then((data) => {
-                console.log(data)
+                console.log(data) // get todays weather for the city
                 setCityInfo(data);
-                setInfo(
-                    `Weather temp in ${data.resolvedAddress}: ${data.days[0].temp} градуси за Цельсієм`
-                );
+                setInfo('');
             })
             .catch((error) => {
-                setInfo(`There is no such city like ${city}, try English.`);
+                setCityInfo('');
+                setInfo(`There is no such city like ${city}, try another city.`);
                 // console.error('There was a problem with the request:', error);
             });
     };
     
     return (
-        <div>
-            <h2>Wheather forecast</h2>
-            <input onInput={onInputText} type="text" />
-            <button onClick={onSearchBtnClick}>Search</button>
-            <p>{info}</p>
-        </div>
+        <form onSubmit={onSearchBtnClick}>
+            <h2>Weather forecast</h2>
+            <input className={styles.inputText} onInput={onInputText} type="text" />
+            <button className={styles.searchButton} onClick={onSearchBtnClick}>Search</button>
+            {cityInfo && <div className={styles.weatherInfo}>
+                <p>{dayOfWeek}</p>
+                <p>{cityInfo.days[0].icon} {cityInfo.days[0].temp} deg</p>
+                <p>{cityInfo.resolvedAddress}</p>
+            </div>}
+            {info && <p className={styles.weatherInfo}>{info}</p>}
+        </form>
     )
 }
 
