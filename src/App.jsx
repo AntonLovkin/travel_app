@@ -1,71 +1,43 @@
 import { useState, useEffect } from 'react';
-import reactLogo from './assets/react.svg';
-import viteLogo from '/vite.svg';
+// import reactLogo from './assets/react.svg';
+// import viteLogo from '/vite.svg';
 import './App.css';
 
-import Modal from './components/Modal.jsx';
-// import Trip from './components/Trip.jsx';
-import DayWeather from './components/DayWeather.jsx';
-import TodaysWeather from './components/TodaysWeather.jsx';
 import SearchTrip from './components/SearchTrip.jsx';
 import TripList from './components/TripList.jsx';
+import Modal from './components/Modal.jsx';
+import DayWeather from './components/DayWeather.jsx';
 
-import { API_KEY, URL } from './variables.js';
+import { getCityInfo, getTripInfo } from './api.js';
+import TodaysWeather from './components/TodaysWeather.jsx';
 
-function App() {
-  const [cityInfo, setCityInfo] = useState('');
+const App = () => {
   const [showModal, setShowModal] = useState(false);
-  const [tripsFromLocalstorage, setTripsFromLocalstorage] = useState(
-    JSON.parse(localStorage.getItem('trips')) || tripsList || []
-  );
-  const [tripWeatherInfo, setTripWeatherInfo] = useState(null);
+  const [city, setCity] = useState('');
+  const [cityInfo, setCityInfo] = useState('');
   const [startDateTrip, setStartDateTrip] = useState('');
+  const [tripWeatherInfo, setTripWeatherInfo] = useState(null);
 
-  const onAddTripBtnClick = () => {
+  const showAddModal = () => {
     setShowModal(!showModal);
   };
-
+  
   const onSaveTripData = (data) => {
-    // console.log(data);
-    setTripsFromLocalstorage((prevState) => [...prevState, data]);
-    // console.log(tripsFromLocalstorage);
+    setTrips((prevState) => [...prevState, data]);
   };
-
-  const searchCityInfo = (city) => {
-    // console.log(city);
-
-    fetch(
-      `${URL}/${city}/today?unitGroup=metric&include=days&key=${API_KEY}&contentType=json`
-    )
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
-      })
-      .then((data) => {
-        // console.log(data.days[0])
-        setCityInfo(data.days[0]);
-      })
-      .catch((error) => {
-        console.error('There was a problem with the request:', error);
-      });
-  };
-
+  
   const onTripClick = (city, startDate, endDate) => {
-    // console.log(city, startDate, endDate);
+    console.log(city)
     searchCityInfo(city);
+    setCity(city);
+
+    if (!startDate) return;
+
     setStartDateTrip(startDate);
-    fetch(
-      `${URL}/${city}/${startDate}/${endDate}?unitGroup=metric&include=days&key=${API_KEY}&contentType=json`
-    )
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
-      })
+    
+    getTripInfo(city, startDate, endDate)
       .then((data) => {
+        console.log(data.days); 
         setTripWeatherInfo(data.days);
       })
       .catch((error) => {
@@ -73,46 +45,51 @@ function App() {
       });
   };
 
-  const data = () => {
-    fetch(
-      `${URL}/${city}/today?unitGroup=metric&include=days&key=${API_KEY}&contentType=json`
-    )
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
-      })
+  const searchCityInfo = (city) => {
+console.log(city)
+    getCityInfo(city)
       .then((data) => {
         console.log(data)
-        // setCityInfo(data.days[0]);
+        setCityInfo(data.days[0]);
       })
       .catch((error) => {
         console.error('There was a problem with the request:', error);
       });
   };
-
+  
   return (
     <>
-      <SearchTrip />
-      <TripList
-        onTripClick={onTripClick}
-        onAddTripBtnClick={onAddTripBtnClick}
-      />
-      <div>
-        <ul>
-          {tripWeatherInfo && tripWeatherInfo.map(info => <DayWeather data={info} />)}
-        </ul>
+      <div style={{ display: "flex" }}>
+        <div style={{ maxWidth: "60vw" }}>
+          <SearchTrip
+            clearCityInfo={setCityInfo}
+            clearTripInfo={setTripWeatherInfo}
+            searchCityInfo={onTripClick}
+          />
+          <TripList
+            onTripClick={onTripClick}
+            showAddModal={showAddModal}
+          // trips={trips}
+          />
+          {tripWeatherInfo &&
+            <div>
+              <h3>Trip Week Weather</h3>
+              <ul style={{ display: "flex", flexWrap: "wrap" }}>
+                {tripWeatherInfo.map(info => <DayWeather data={info} />)}
+              </ul>
+            </div>}
+        </div>
+        {cityInfo && 
+          <TodaysWeather data={cityInfo} date={startDateTrip} city={city} />
+        }
       </div>
-      {cityInfo && startDateTrip && (
-        <TodaysWeather data={cityInfo} date={startDateTrip} />
-      )}
       {showModal && (
-        <Modal onSave={onSaveTripData} onClose={onAddTripBtnClick} />
+        <Modal
+          onSave={onSaveTripData}
+          onClose={showAddModal} />
       )}
-      <button onClick={data}>Click</button>
     </>
-  );
+  )
 }
 
 export default App;
