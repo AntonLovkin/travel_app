@@ -7,7 +7,8 @@ const Modal = ({ onClose, onSave }) => {
   const [endDate, setEndDate] = useState('');
 
   const handleSave = () => {
-    onSave({ city, startDate, endDate });
+    if (city.trim() === '' || startDate === '' || endDate === '') return;
+    onSave({ id: Math.random().toFixed(5), city, startDate, endDate });
     onClose();
   };
 
@@ -25,7 +26,6 @@ const Modal = ({ onClose, onSave }) => {
             <option value="New York">New York</option>
             <option value="London">London</option>
             <option value="Paris">Paris</option>
-            {/* Add more cities as needed */}
           </select>
           <h2>Start Date</h2>
           <input
