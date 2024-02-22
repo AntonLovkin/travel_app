@@ -9,7 +9,7 @@ function TripList({ onTripClick, showAddModal, trips }) {
             <ul style={{ display: "flex", flexWrap: "wrap" }}>
                 {trips.length > 0 &&
                     trips.map(trip =>
-                        <Trip onClick={onTripClick} data={trip} />)}
+                        <Trip key={trip.id} onClick={onTripClick} data={trip} />)}
                 <li>
                     <button
                         className={styles.button_add}
