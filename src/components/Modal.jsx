@@ -1,15 +1,27 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import './Modal.css';
+import { fetchCityImage } from '../api';
 
 const Modal = ({ onClose, onSave }) => {
   const [city, setCity] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
 
-  const handleSave = () => {
-    if (city.trim() === '' || startDate === '' || endDate === '') return;
-    onSave({ id: Math.random().toFixed(5), city, startDate, endDate });
+  const saveDataTrip = (url) => {
+    onSave({ id: Math.random().toFixed(5), city, startDate, endDate, image: url });
     onClose();
+  };
+
+  const handleSave = async () => {
+    if (city.trim() === '' || startDate === '' || endDate === '') return;
+
+    await fetchCityImage(city)
+      .then((url) => {
+        saveDataTrip(url);
+      })
+      .catch((error) => {
+        console.error('There was a problem with the request:', error);
+      });
   };
 
   return (
