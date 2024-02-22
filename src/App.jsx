@@ -8,9 +8,10 @@ import SearchTrip from './components/SearchTrip.jsx';
 import TripList from './components/TripList.jsx';
 import Modal from './components/Modal.jsx';
 import DayWeather from './components/DayWeather.jsx';
+import TodaysWeather from './components/TodaysWeather.jsx';
 
 import { getCityInfo, getTripInfo } from './api.js';
-import TodaysWeather from './components/TodaysWeather.jsx';
+import sortByStartDate from './sortByStartDate.js';
 
 const App = () => {
   const [showModal, setShowModal] = useState(false);
@@ -26,7 +27,8 @@ const App = () => {
   useEffect(() => {
     const trips = JSON.parse(localStorage.getItem('trips'));
     if (trips) {
-      setTrips(trips);
+      const sortedTrips = sortByStartDate(trips);
+      setTrips(sortedTrips);
     }
   }, []);
 
@@ -43,7 +45,6 @@ const App = () => {
   };
   
   const onTripClick = (city, startDate, endDate) => {
-    console.log(city)
     searchCityInfo(city);
     setCity(city);
 
@@ -53,7 +54,6 @@ const App = () => {
     
     getTripInfo(city, startDate, endDate)
       .then((data) => {
-        console.log(data.days); 
         setTripWeatherInfo(data.days);
       })
       .catch((error) => {
@@ -62,10 +62,8 @@ const App = () => {
   };
 
   const searchCityInfo = (city) => {
-    console.log(city)
     getCityInfo(city)
       .then((data) => {
-        console.log(data)
         setCityInfo(data.days[0]);
       })
       .catch((error) => {
@@ -91,12 +89,12 @@ const App = () => {
             <div>
               <h3>Trip Week Weather</h3>
               <ul style={{ display: "flex", flexWrap: "wrap" }}>
-                {tripWeatherInfo.map(info => <DayWeather data={info} />)}
+                {tripWeatherInfo.map((info, idx) => <DayWeather key={idx} data={info} />)}
               </ul>
             </div>}
         </div>
-        {cityInfo && cityInfo &&
-          <TodaysWeather data={cityInfo} date={startDateTrip} city={city} />
+        {cityInfo && 
+          <TodaysWeather data={cityInfo} startDateTrip={startDateTrip} city={city} />
         }
       </div>
       {showModal && (
