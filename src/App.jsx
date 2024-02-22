@@ -1,158 +1,111 @@
 import { useState, useEffect } from 'react';
-import reactLogo from './assets/react.svg';
-import viteLogo from '/vite.svg';
+
 import './App.css';
 
+import { tripsList } from "./tripsData";
+
+import SearchTrip from './components/SearchTrip.jsx';
+import TripList from './components/TripList.jsx';
 import Modal from './components/Modal.jsx';
-import Trip from './components/Trip.jsx';
 import DayWeather from './components/DayWeather.jsx';
+
+import { getCityInfo, getTripInfo } from './api.js';
 import TodaysWeather from './components/TodaysWeather.jsx';
 
-const API_KEY = 'XM9YG9VGNME7QHFXDNCCMDYFU';
-const tripsList = [
-  { city: 'Kyiv', startDate: '2024-03-08', endDate: '2024-03-09' },
-  { city: 'Tokio', startDate: '2024-03-06', endDate: '2024-03-09' },
-];
-
-function App() {
+const App = () => {
+  const [showModal, setShowModal] = useState(false);
   const [city, setCity] = useState('');
   const [cityInfo, setCityInfo] = useState('');
-  const [info, setInfo] = useState('');
-  const [showModal, setShowModal] = useState(false);
-  const [tripsFromLocalstorage, setTripsFromLocalstorage] = useState(
+  const [startDateTrip, setStartDateTrip] = useState('');
+  const [tripWeatherInfo, setTripWeatherInfo] = useState(null);
+
+  const [trips, setTrips] = useState(
     JSON.parse(localStorage.getItem('trips')) || tripsList || []
   );
-  const [tripWeatherInfo, setTripWeatherInfo] = useState(null);
 
   useEffect(() => {
     const trips = JSON.parse(localStorage.getItem('trips'));
-    // console.log(trips);
     if (trips) {
-      setTripsFromLocalstorage(trips);
+      setTrips(trips);
     }
   }, []);
 
   useEffect(() => {
-    // console.log(tripsFromLocalstorage);
-    localStorage.setItem('trips', JSON.stringify(tripsFromLocalstorage));
-  }, [tripsFromLocalstorage]);
+    localStorage.setItem('trips', JSON.stringify(trips));
+  }, [trips]);
 
-  const onInputText = (event) => {
-    // console.log(event.target.value);
-    setCity(event.target.value.toLowerCase());
-  };
-
-  const onSearchBtnClick = (event) => {
-    event.preventDefault();
-    // console.log(city);
-    if (city.trim() === '') return;
-
-    fetch(
-      `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${city}/today?unitGroup=metric&include=days&key=${API_KEY}&contentType=json`
-    )
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
-      })
-      .then((data) => {
-        // console.log(data)
-        setCityInfo(data);
-        setInfo(
-          `Weather temp in ${data.resolvedAddress}: ${data.days[0].temp} градуси за Цельсієм`
-        );
-      })
-      .catch((error) => {
-        setInfo(`There is no such city like ${city}, try English.`);
-        // console.error('There was a problem with the request:', error);
-      });
-  };
-
-  const onAddTripBtnClick = () => {
+  const showAddModal = () => {
     setShowModal(!showModal);
   };
-
+  
   const onSaveTripData = (data) => {
-    console.log(data);
-    setTripsFromLocalstorage((prevState) => [...prevState, data]);
-    console.log(tripsFromLocalstorage);
+    setTrips((prevState) => [...prevState, data]);
   };
+  
+  const onTripClick = (city, startDate, endDate) => {
+    console.log(city)
+    searchCityInfo(city);
+    setCity(city);
 
-  const searchCityInfo = (city) => {
-    console.log(city);
+    if (!startDate) return;
 
-    fetch(
-      `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${city}/today?unitGroup=metric&include=days&key=${API_KEY}&contentType=json`
-    )
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
-      })
+    setStartDateTrip(startDate);
+    
+    getTripInfo(city, startDate, endDate)
       .then((data) => {
-        console.log(data.days[0])
-        setCityInfo(data.days[0]);
+        console.log(data.days); 
+        setTripWeatherInfo(data.days);
       })
       .catch((error) => {
-        // setInfo(`There is no such city like ${city}, try English.`);
         console.error('There was a problem with the request:', error);
       });
   };
 
-  const onTripClick = (city, startDate, endDate) => {
-    // console.log(city, startDate, endDate);
-    searchCityInfo(city);
-    fetch(
-      `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${city}/${startDate}/${endDate}?unitGroup=metric&include=days&key=${API_KEY}&contentType=json`
-    )
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
-      })
+  const searchCityInfo = (city) => {
+    console.log(city)
+    getCityInfo(city)
       .then((data) => {
-        setTripWeatherInfo(data.days);
+        console.log(data)
+        setCityInfo(data.days[0]);
       })
       .catch((error) => {
-        // setInfo(`There is no such city like ${city}, try English.`);
-        // console.error('There was a problem with the request:', error);
+        console.error('There was a problem with the request:', error);
       });
   };
-
+    
   return (
     <>
-      <div>
-        <h2>Wheather forecast</h2>
-        <input onInput={onInputText} type="text" />
-        <button onClick={onSearchBtnClick}>Search</button>
-        <p>{info}</p>
+      <div style={{ display: "flex" }}>
+        <div style={{ maxWidth: "60vw" }}>
+          <SearchTrip
+            clearCityInfo={setCityInfo}
+            clearTripInfo={setTripWeatherInfo}
+            searchCityInfo={onTripClick}
+          />
+          <TripList
+            onTripClick={onTripClick}
+            showAddModal={showAddModal}
+          trips={trips}
+          />
+          {tripWeatherInfo &&
+            <div>
+              <h3>Trip Week Weather</h3>
+              <ul style={{ display: "flex", flexWrap: "wrap" }}>
+                {tripWeatherInfo.map(info => <DayWeather data={info} />)}
+              </ul>
+            </div>}
+        </div>
+        {cityInfo && cityInfo &&
+          <TodaysWeather data={cityInfo} date={startDateTrip} city={city} />
+        }
       </div>
-      <div>
-        <h2>List of Trips</h2>
-        <ul>
-            {tripsFromLocalstorage.length > 0 &&
-            tripsFromLocalstorage.map(data => <Trip onClick={onTripClick} data={data}/>)}
-          <li>
-            <button onClick={onAddTripBtnClick}>Add trip</button>
-          </li>
-        </ul>
-      </div>
-      <div>
-        <ul>
-        {tripWeatherInfo && tripWeatherInfo.map(info => <DayWeather data={info} />)}
-        </ul>
-      </div>
-      {cityInfo && (
-        <TodaysWeather data={cityInfo}/>
-      )}
       {showModal && (
-        <Modal onSave={onSaveTripData} onClose={onAddTripBtnClick} />
+        <Modal
+          onSave={onSaveTripData}
+          onClose={showAddModal} />
       )}
     </>
-  );
+  )
 }
 
 export default App;
