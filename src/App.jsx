@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-// import reactLogo from './assets/react.svg';
-// import viteLogo from '/vite.svg';
+
 import './App.css';
+
+import { tripsList } from "./tripsData";
 
 import SearchTrip from './components/SearchTrip.jsx';
 import TripList from './components/TripList.jsx';
@@ -17,6 +18,21 @@ const App = () => {
   const [cityInfo, setCityInfo] = useState('');
   const [startDateTrip, setStartDateTrip] = useState('');
   const [tripWeatherInfo, setTripWeatherInfo] = useState(null);
+
+  const [trips, setTrips] = useState(
+    JSON.parse(localStorage.getItem('trips')) || tripsList || []
+  );
+
+  useEffect(() => {
+    const trips = JSON.parse(localStorage.getItem('trips'));
+    if (trips) {
+      setTrips(trips);
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('trips', JSON.stringify(trips));
+  }, [trips]);
 
   const showAddModal = () => {
     setShowModal(!showModal);
@@ -46,7 +62,7 @@ const App = () => {
   };
 
   const searchCityInfo = (city) => {
-console.log(city)
+    console.log(city)
     getCityInfo(city)
       .then((data) => {
         console.log(data)
@@ -56,7 +72,7 @@ console.log(city)
         console.error('There was a problem with the request:', error);
       });
   };
-  
+    
   return (
     <>
       <div style={{ display: "flex" }}>
@@ -69,7 +85,7 @@ console.log(city)
           <TripList
             onTripClick={onTripClick}
             showAddModal={showAddModal}
-          // trips={trips}
+          trips={trips}
           />
           {tripWeatherInfo &&
             <div>
@@ -79,7 +95,7 @@ console.log(city)
               </ul>
             </div>}
         </div>
-        {cityInfo && 
+        {cityInfo && cityInfo &&
           <TodaysWeather data={cityInfo} date={startDateTrip} city={city} />
         }
       </div>
