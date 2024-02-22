@@ -26,8 +26,8 @@ const Timer = ({ date }) => {
 
   return (
     <div>
-      <h3>Time to trip:</h3>
-      <div>{timeLeft}</div>
+      <h3 style={{fontSize: '1.8rem'}}>Time to trip:</h3>
+      <div style={{fontSize: '1.8rem'}}>{timeLeft}</div>
     </div>
   );
 };
