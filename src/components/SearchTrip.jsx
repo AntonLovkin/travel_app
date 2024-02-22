@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 import styles from './SearchTrip.module.css';
+import { fetchCityImage } from '../api';
 
 function SearchTrip({clearCityInfo, clearTripInfo, searchCityInfo}) {
     const [city, setCity] = useState('');
@@ -14,6 +15,14 @@ function SearchTrip({clearCityInfo, clearTripInfo, searchCityInfo}) {
         clearTripInfo(null);
         clearCityInfo('');
 
+        fetchCityImage(city)
+            .then((url) => {
+                console.log(url);
+            })
+            .catch((error) => {
+                console.error('There was a problem with the request:', error);
+            });
+        
         if (city.trim() === '') return;
                 
         searchCityInfo(city);
@@ -24,12 +33,6 @@ function SearchTrip({clearCityInfo, clearTripInfo, searchCityInfo}) {
             <h2>Weather forecast</h2>
             <input className={styles.inputText} onInput={onInputText} type="text" />
             <button className={styles.searchButton} onClick={onSearchBtnClick}>Search</button>
-            {/* {cityInfo && <div className={styles.weatherInfo}>
-                <p>{dayOfWeek}</p>
-                <p>{cityInfo.days[0].icon} {cityInfo.days[0].temp} deg</p>
-                <p>{cityInfo.resolvedAddress}</p>
-            </div>} */}
-            {/* {info && <p className={styles.weatherInfo}>{info}</p>} */}
         </form>
     )
 }
