@@ -3,13 +3,12 @@
     flex-direction: column;
     align-items: center;
     align-self: start;
-    padding: 20px;
-    margin-top: 30px;
+    padding: 30px;
     border: 1px solid #ccc;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     width: 300px;
-    height: 500px;
+    height: 100%;
     background-color: #f9f9f9;
 }
 
@@ -26,5 +25,24 @@
 }
 
 .timerContainer {
-    margin-top: 10px;
+    margin: 10px 0;
+}
+
+.trip_weather_item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 250px;
+    height: 150px;
+    border: 2px solid black;
+    box-shadow: 6px 4px 4px 1px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    margin: 10px;
+    cursor: pointer;
+}
+
+.trip_weather_item h3,
+.trip_weather_item p{
+    padding: 0;margin: 0;
 }

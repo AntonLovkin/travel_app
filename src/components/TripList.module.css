@@ -1,0 +1,36 @@
+.trip_item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 250px;
+    height: 300px;
+    box-shadow: 6px 4px 4px 1px rgba(0, 0, 0, 0.1);
+    margin: 10px;
+    cursor: pointer;
+}
+
+.trip_item:hover {
+    box-shadow: 0px 0px 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.trip_item img{
+    width: 250px;
+    height: 172px;
+    max-height: fit-content;
+}
+
+.button_add {
+    width: 252px;
+    height: 153px;
+    border: none;
+    box-shadow: 6px 4px 4px 1px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    margin: 10px;
+    padding: 10px;
+    cursor: pointer;
+    font-size: 1.5rem;
+}
+
+.button_add:hover {
+    box-shadow: 0px 0px 4px 12px rgba(0, 0, 0, 0.1);
+}
