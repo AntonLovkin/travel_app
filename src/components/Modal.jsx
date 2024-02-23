@@ -12,10 +12,10 @@ const Modal = ({ onClose, onSave }) => {
     onClose();
   };
 
-  const handleSave = async () => {
+  const handleSave = () => {
     if (city.trim() === '' || startDate === '' || endDate === '') return;
 
-    await fetchCityImage(city)
+    fetchCityImage(city)
       .then((url) => {
         saveDataTrip(url);
       })
