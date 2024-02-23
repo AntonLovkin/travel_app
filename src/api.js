@@ -1,7 +1,7 @@
 import { API_KEY, URL } from "./variables";
 
 export const fetchCityImage = (city) => {
-    const url = `https://api.unsplash.com/search/photos?query=${city}&client_id=${API_KEY}`;
+    const url = `https://api.unsplash.com/search/photos?query=${city}&client_id=Rib2_RqXYYNu-ApC6mp34EiRNDw9WGkY5V_dleTM9j8`;
 
     return fetch(url)
         .then(response => {
